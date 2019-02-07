@@ -16,10 +16,10 @@ In Jenkins, go to Manage Jenkins → Configure System. Under Global Pipeline Lib
 * Credentials: (leave blank)
 
 Then create a Jenkins job with the following pipeline (note that the underscore _ is not a typo):
-```
+```groovy
 @Library('jenkins-pipeline-aws-shared-lib')_
 
-def aws = new com.aws.Pipeline()
+def aws = new com.jenkins.aws.Pipeline()
 
 docker.image('garland/aws-cli-docker').inside {
     withAWS(credentials: 'aws-credentials',region: 'us-east-1'){
@@ -32,10 +32,30 @@ docker.image('garland/aws-cli-docker').inside {
 }
 ```
 Or:
-```
-@Library('jenkins-pipeline-aws-shared-lib') import com.aws.Pipeline
+```groovy
+@Library('jenkins-pipeline-aws-shared-lib') import com.jenkins.aws.Pipeline
 
 def aws = new Pipeline()
 
-...
+//...
+```
+
+For template utils use:
+```groovy
+@Library('jenkins-pipeline-aws-shared-lib') _ 
+
+def template = new com.jenkins.utis.Template()
+
+node {
+    stage('Generate worker from template'){
+                def binding = [:]
+                binding.workerId    = "12345"
+                binding.workerName  = "Tomer"
+
+    
+                def templateFile = "worker.template"
+                def dstFile      = "worker.json"
+                template.createFromTemplate(templateFile, binding ,dstFile)
+    }
+}
 ```

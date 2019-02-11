@@ -96,3 +96,25 @@ def logsGetOrCreateLogGroup(String logGroupName){
         error("Unable to create CloudWatch log group: ${logGroupName}, return status from aws logs is: ${logsCreationStatus}")
     }
 }
+
+/**
+ * Executes AWS CloudFormation create stack command
+ * @param stackName
+ * @param templateFile - path to a CloudFormation template .yaml or .json file
+ * @param parameters   - example:
+ * java.util.Map parameters = [
+ *                              "param1"     : 1,
+ *                              "param2"     : "some-value",
+ *                            ]
+ *
+ * @returns stackId - as String
+ */
+def cloudFormationCreateStack(String stackName, String templateFile, java.util.Map parameters){
+    def parametersString = ""
+    parameters.each{ key, value ->
+        parametersString += "ParameterKey=${key},ParameterValue=${value} "
+    }
+    def command = "aws cloudformation create-stack --stack-name ${stackName} --template-body file://${templateFile} --parameters ${parametersString.trim()}"
+    def responseObject = executeShToObject(command)
+    return  responseObject.StackId
+}

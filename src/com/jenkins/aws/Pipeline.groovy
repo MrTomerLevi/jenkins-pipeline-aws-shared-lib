@@ -118,3 +118,26 @@ def cloudFormationCreateStack(String stackName, String templateFile, java.util.M
     def responseObject = executeShToObject(command)
     return  responseObject.StackId
 }
+
+/**
+ * Executes AWS CloudFormation update stack command
+ * @param stackName
+ * @param templateFile - path to a CloudFormation template .yaml or .json file
+ * @param parameters   - example:
+ * java.util.Map parameters = [
+ *                              "param1"     : 1,
+ *                              "param2"     : "some-value",
+ *                            ]
+ *
+ * @returns cli command status code
+ */
+def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters){
+    def parametersString = ""
+    parameters.each{ key, value ->
+        parametersString += "ParameterKey=${key},ParameterValue=${value} "
+    }
+    def command = "aws cloudformation update-stack --stack-name ${stackName} --template-body file://${templateFile} --parameters ${parametersString.trim()}"
+    def status = sh(script: command, returnStatus:true)
+    println("awsLogs status code is: ${status}")
+    return status
+}

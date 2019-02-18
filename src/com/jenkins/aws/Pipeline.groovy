@@ -131,12 +131,16 @@ def cloudFormationCreateStack(String stackName, String templateFile, java.util.M
  *
  * @returns cli command status code
  */
-def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters){
+def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, List<String> capabilities=[]){
     def parametersString = ""
     parameters.each{ key, value ->
         parametersString += "ParameterKey=${key},ParameterValue=${value} "
     }
-    def command = "aws cloudformation update-stack --stack-name ${stackName} --template-body file://${templateFile} --parameters ${parametersString.trim()}"
+    def capabilitiesString = ""
+    capabilities.each { c ->
+        capabilitiesString += "${c} "
+    }
+    def command = "aws cloudformation update-stack --stack-name ${stackName} --capabilities ${capabilitiesString.trim()} --template-body file://${templateFile} --parameters ${parametersString.trim()}"
     def status = sh(script: command, returnStatus:true)
     println("awsLogs status code is: ${status}")
     return status

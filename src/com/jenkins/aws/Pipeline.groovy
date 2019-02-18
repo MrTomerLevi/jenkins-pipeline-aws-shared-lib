@@ -37,7 +37,7 @@ def ecrGetOrCreateRepo(String repositoryName){
     if(ecrCreation){
         ecrRepositoryUri =  ecrCreation['repository']['repositoryUri']
     } else {
-        def ecrDescribe = awsECR('describe-repositories', repositoryName)
+        def ecrDescribe = ecr('describe-repositories', repositoryName)
         ecrRepositoryUri = ecrDescribe.repositories[0]['repositoryUri']
     }
     return ecrRepositoryUri

@@ -124,6 +124,7 @@ def cloudFormationCreateStack(String stackName, String templateFile, java.util.M
  * @param stackName
  * @param templateFile - path to a CloudFormation template .yaml or .json file
  * @param parameters   - example:
+ * @param capabilities - list of capabilities: CAPABILITY_IAM, CAPABILITY_NAMED_IAM, CAPABILITY_AUTO_EXPAND
  * java.util.Map parameters = [
  *                              "param1"     : 1,
  *                              "param2"     : "some-value",
@@ -131,7 +132,7 @@ def cloudFormationCreateStack(String stackName, String templateFile, java.util.M
  *
  * @returns cli command status code
  */
-def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, List<String> capabilities=[]){
+def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, List capabilities=[]){
     def parametersString = ""
     parameters.each{ key, value ->
         parametersString += "ParameterKey=${key},ParameterValue=${value} "

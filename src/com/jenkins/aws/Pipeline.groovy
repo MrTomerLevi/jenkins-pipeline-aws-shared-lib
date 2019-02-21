@@ -106,15 +106,19 @@ def logsGetOrCreateLogGroup(String logGroupName){
  *                              "param1"     : 1,
  *                              "param2"     : "some-value",
  *                            ]
- *
+ * @param capabilities - list of capabilities: CAPABILITY_IAM, CAPABILITY_NAMED_IAM, CAPABILITY_AUTO_EXPAND
  * @returns stackId - as String
  */
-def cloudFormationCreateStack(String stackName, String templateFile, java.util.Map parameters){
+def cloudFormationCreateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[]){
     def parametersString = ""
     parameters.each{ key, value ->
         parametersString += "ParameterKey=${key},ParameterValue=${value} "
     }
-    def command = "aws cloudformation create-stack --stack-name ${stackName} --template-body file://${templateFile} --parameters ${parametersString.trim()}"
+    def capabilitiesString = ""
+    capabilities.each { c ->
+        capabilitiesString += "${c} "
+    }
+    def command = "aws cloudformation create-stack --stack-name ${stackName} --capabilities ${capabilitiesString.trim()} --template-body file://${templateFile} --parameters ${parametersString.trim()}"
     def responseObject = executeShToObject(command)
     return  responseObject.StackId
 }
@@ -132,7 +136,7 @@ def cloudFormationCreateStack(String stackName, String templateFile, java.util.M
  *
  * @returns cli command status code
  */
-def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities){
+def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[]){
     def parametersString = ""
     parameters.each{ key, value ->
         parametersString += "ParameterKey=${key},ParameterValue=${value} "

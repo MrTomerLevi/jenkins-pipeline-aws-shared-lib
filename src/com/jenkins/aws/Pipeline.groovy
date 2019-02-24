@@ -158,7 +158,7 @@ def cloudFormationUpdateStack(String stackName, String templateFile, java.util.M
  * @returns object representing the return value of the corresponding CLI command
  */
 def cloudFormationDescribeStacks(String stackName){
-    def command = "aws cloudformation update-stacks --stack-name ${stackName}"
+    def command = "aws cloudformation describe-stacks --stack-name ${stackName}"
     def responseObject = executeShToObject(command)
     return responseObject
 }

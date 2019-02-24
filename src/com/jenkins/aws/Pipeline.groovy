@@ -124,6 +124,7 @@ def cloudFormationCreateStack(String stackName, String templateFile, java.util.M
 
     println("cloudformation create-stack is async: ${async}")
     if (!async){
+        sleep(time: 15, unit: "SECONDS")
         println("waiting for cloudformation to finish creating ${stackName} stack...")
         def waitCommand = "aws cloudformation wait stack-create-complete --stack-name ${stackName}"
         sh(waitCommand)
@@ -141,8 +142,6 @@ def cloudFormationDescribeStacks(String stackName){
     def responseObject = executeShToObject(command)
     return responseObject
 }
-
-
 
 /**
  * Executes AWS CloudFormation update stack command
@@ -173,6 +172,7 @@ def cloudFormationUpdateStack(String stackName, String templateFile, java.util.M
 
     println("cloudformation update-stack is async: ${async}")
     if (!async){
+        sleep(time: 15, unit: "SECONDS")
         println("waiting for cloudformation to finish updating ${stackName} stack...")
         def waitCommand = "aws cloudformation wait stack-update-complete --stack-name ${stackName}"
         sh(waitCommand)

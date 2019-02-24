@@ -107,9 +107,10 @@ def logsGetOrCreateLogGroup(String logGroupName){
  *                              "param2"     : "some-value",
  *                            ]
  * @param capabilities - list of capabilities: CAPABILITY_IAM, CAPABILITY_NAMED_IAM, CAPABILITY_AUTO_EXPAND
+ * @param async - if set to false (default), invocation resumes without waiting for stack to finish creating
  * @returns stackId - as String
  */
-def cloudFormationCreateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[]){
+def cloudFormationCreateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[], boolean async=false){
     def parametersString = ""
     parameters.each{ key, value ->
         parametersString += "ParameterKey=${key},ParameterValue=${value} "
@@ -120,6 +121,11 @@ def cloudFormationCreateStack(String stackName, String templateFile, java.util.M
     }
     def command = "aws cloudformation create-stack --stack-name ${stackName} --capabilities ${capabilitiesString.trim()} --template-body file://${templateFile} --parameters ${parametersString.trim()}"
     def responseObject = executeShToObject(command)
+
+    if (!async){
+        def waitCommand = "aws cloudformation wait stack-create-complete --stack-name ${stackName}"
+        executeShToObject(waitCommand)
+    }
     return  responseObject.StackId
 }
 
@@ -129,6 +135,7 @@ def cloudFormationCreateStack(String stackName, String templateFile, java.util.M
  * @param templateFile - path to a CloudFormation template .yaml or .json file
  * @param parameters   - example:
  * @param capabilities - list of capabilities: CAPABILITY_IAM, CAPABILITY_NAMED_IAM, CAPABILITY_AUTO_EXPAND
+ * @param async - if set to false (default), invocation resumes without waiting for stack to finish updating
  * java.util.Map parameters = [
  *                              "param1"     : 1,
  *                              "param2"     : "some-value",
@@ -136,7 +143,7 @@ def cloudFormationCreateStack(String stackName, String templateFile, java.util.M
  *
  * @returns cli command status code
  */
-def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[]){
+def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[], boolean async=false){
     def parametersString = ""
     parameters.each{ key, value ->
         parametersString += "ParameterKey=${key},ParameterValue=${value} "
@@ -148,8 +155,14 @@ def cloudFormationUpdateStack(String stackName, String templateFile, java.util.M
     def command = "aws cloudformation update-stack --stack-name ${stackName} --capabilities ${capabilitiesString.trim()} --template-body file://${templateFile} --parameters ${parametersString.trim()}"
     def status = sh(script: command, returnStatus:true)
     println("awsLogs status code is: ${status}")
+
+    if (!async){
+        def waitCommand = "aws cloudformation wait stack-create-complete --stack-name ${stackName}"
+        executeShToObject(waitCommand)
+    }
     return status
 }
+
 
 
 /**

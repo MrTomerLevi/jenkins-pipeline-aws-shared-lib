@@ -150,3 +150,15 @@ def cloudFormationUpdateStack(String stackName, String templateFile, java.util.M
     println("awsLogs status code is: ${status}")
     return status
 }
+
+
+/**
+ * Executes AWS CloudFormation describe stack command
+ * @param stackName
+ * @returns object representing the return value of the corresponding CLI command
+ */
+def cloudFormationDescribeStacks(String stackName){
+    def command = "aws cloudformation update-stacks --stack-name ${stackName}"
+    def responseObject = executeShToObject(command)
+    return responseObject
+}

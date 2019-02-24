@@ -122,12 +122,26 @@ def cloudFormationCreateStack(String stackName, String templateFile, java.util.M
     def command = "aws cloudformation create-stack --stack-name ${stackName} --capabilities ${capabilitiesString.trim()} --template-body file://${templateFile} --parameters ${parametersString.trim()}"
     def responseObject = executeShToObject(command)
 
+    println("cloudformation create-stack is async: ${async}")
     if (!async){
         def waitCommand = "aws cloudformation wait stack-create-complete --stack-name ${stackName}"
         executeShToObject(waitCommand)
     }
-    return  responseObject.StackId
+    return responseObject.StackId
 }
+
+/**
+ * Executes AWS CloudFormation describe stack command
+ * @param stackName
+ * @returns object representing the return value of the corresponding CLI command
+ */
+def cloudFormationDescribeStacks(String stackName){
+    def command = "aws cloudformation describe-stacks --stack-name ${stackName}"
+    def responseObject = executeShToObject(command)
+    return responseObject
+}
+
+
 
 /**
  * Executes AWS CloudFormation update stack command
@@ -135,12 +149,12 @@ def cloudFormationCreateStack(String stackName, String templateFile, java.util.M
  * @param templateFile - path to a CloudFormation template .yaml or .json file
  * @param parameters   - example:
  * @param capabilities - list of capabilities: CAPABILITY_IAM, CAPABILITY_NAMED_IAM, CAPABILITY_AUTO_EXPAND
- * @param async - if set to false (default), invocation resumes without waiting for stack to finish updating
  * java.util.Map parameters = [
  *                              "param1"     : 1,
  *                              "param2"     : "some-value",
  *                            ]
  *
+ * @param async - if set to false (default), invocation resumes without waiting for stack to finish updating
  * @returns cli command status code
  */
 def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[], boolean async=false){
@@ -154,24 +168,12 @@ def cloudFormationUpdateStack(String stackName, String templateFile, java.util.M
     }
     def command = "aws cloudformation update-stack --stack-name ${stackName} --capabilities ${capabilitiesString.trim()} --template-body file://${templateFile} --parameters ${parametersString.trim()}"
     def status = sh(script: command, returnStatus:true)
-    println("awsLogs status code is: ${status}")
+    println("cloudformation update-stack status code is: ${status}")
 
+    println("cloudformation update-stack is async: ${async}")
     if (!async){
-        def waitCommand = "aws cloudformation wait stack-create-complete --stack-name ${stackName}"
+        def waitCommand = "aws cloudformation wait stack-update-complete --stack-name ${stackName}"
         executeShToObject(waitCommand)
     }
     return status
-}
-
-
-
-/**
- * Executes AWS CloudFormation describe stack command
- * @param stackName
- * @returns object representing the return value of the corresponding CLI command
- */
-def cloudFormationDescribeStacks(String stackName){
-    def command = "aws cloudformation describe-stacks --stack-name ${stackName}"
-    def responseObject = executeShToObject(command)
-    return responseObject
 }

@@ -163,3 +163,17 @@ def cloudFormationUpdateStack(String stackName, String templateFile, java.util.M
 
     return status
 }
+
+/**
+ * Executes AWS CloudFormation wait stack-create-completed
+ * @param stackName
+ *
+ * @returns cli command status code
+ */
+def cloudFormationWaitStackCreateComplete(String stackName){
+    def waitCommand = "aws cloudformation wait stack-create-complete --stack-name ${stackName}"
+    def status = sh(waitCommand)
+    println("cloudformation wait stack-create-complete status code is: ${status}")
+
+    return status
+}

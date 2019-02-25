@@ -216,7 +216,7 @@ def cloudFormationCreateOrUpdateStack(String stackName, String templateFile, jav
     }
 
     if (cloudFormationStackExist(stackName)){
-        println("cloudformation stack ${sstackNametatus} exist, executing update-stack command")
+        println("cloudformation stack ${stackName} exist, executing update-stack command")
         return cloudFormationUpdateStack(stackName, templateFile, parameters, capabilities)
     }
     return  cloudFormationCreateStack(stackName, templateFile, parameters, capabilities)

@@ -177,3 +177,48 @@ def cloudFormationWaitStackCreateComplete(String stackName){
 
     return status
 }
+
+/**
+ * Checks an AWS CloudFormation stack exists
+ * @param stackName
+ *
+ * @returns true if the given stack exist regardless of its state
+ */
+boolean cloudFormationStackExist(String stackName){
+    def waitCommand = "aws cloudformation describe-stacks --stack-name ${stackName}"
+    def status = sh(waitCommand)
+    println("cloudformation wait stack-create-complete status code is: ${status}")
+
+    return status != 255 ? true : false
+}
+
+/**
+ * Executes AWS CloudFormation create or update stack command
+ * @param stackName
+ * @param templateFile - path to a CloudFormation template .yaml or .json file
+ * @param parameters   - example:
+ * @param capabilities - list of capabilities: CAPABILITY_IAM, CAPABILITY_NAMED_IAM, CAPABILITY_AUTO_EXPAND
+ * java.util.Map parameters = [
+ *                              "param1"     : 1,
+ *                              "param2"     : "some-value",
+ *                            ]
+ *
+ * @returns cli command status code
+ */
+def cloudFormationCreateOrUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[]){
+    def parametersString = ""
+    parameters.each{ key, value ->
+        parametersString += "ParameterKey=${key},ParameterValue=${value} "
+    }
+    def capabilitiesString = ""
+    capabilities.each { c ->
+        capabilitiesString += "${c} "
+    }
+
+    if (cloudFormationStackExist(stackName)){
+        println("cloudformation stack ${sstackNametatus} exist, executing update-stack command")
+        return cloudFormationUpdateStack(stackName, templateFile, parameters, capabilities)
+    }
+    return  cloudFormationCreateStack(stackName, templateFile, parameters, capabilities)
+
+}

@@ -178,6 +178,21 @@ def cloudFormationWaitStackCreateComplete(String stackName){
     return status
 }
 
+
+/**
+ * Executes AWS CloudFormation wait stack-update-completeed
+ * @param stackName
+ *
+ * @returns cli command status code
+ */
+def cloudFormationWaitStackUpdateComplete(String stackName){
+    def waitCommand = "aws cloudformation wait stack-update-complete --stack-name ${stackName}"
+    def status = sh(waitCommand)
+    println("cloudformation wait stack-update-complete status code is: ${status}")
+
+    return status
+}
+
 /**
  * Checks an AWS CloudFormation stack exists
  * @param stackName

@@ -200,11 +200,16 @@ def cloudFormationWaitStackUpdateComplete(String stackName){
  * @returns true if the given stack exist regardless of its state
  */
 boolean cloudFormationStackExist(String stackName){
-    def waitCommand = "aws cloudformation describe-stacks --stack-name ${stackName}"
-    def status = sh(waitCommand)
-    println("cloudformation wait stack-create-complete status code is: ${status}")
+    try{
+        def waitCommand = "aws cloudformation describe-stacks --stack-name ${stackName}"
+        def status = sh(waitCommand)
+        println("cloudformation wait describe-stacks status code is: ${status}")
 
-    return status != 255 ? true : false
+        return status != 255 ? true : false
+    } catch (Exception ex) {
+        // if stack does not exist an exception is thrown
+        return false
+    }
 }
 
 /**

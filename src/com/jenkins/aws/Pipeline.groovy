@@ -112,7 +112,7 @@ def logsGetOrCreateLogGroup(String logGroupName){
 def cloudFormationCreateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[]){
     def parametersString = ""
     parameters.each{ key, value ->
-        parametersString += "ParameterKey=${key},ParameterValue=${value} "
+        parametersString += "ParameterKey=${key},ParameterValue='${value}' "
     }
     def capabilitiesString = ""
     capabilities.each { c ->
@@ -151,7 +151,7 @@ def cloudFormationDescribeStacks(String stackName){
 def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[]){
     def parametersString = ""
     parameters.each{ key, value ->
-        parametersString += "ParameterKey=${key},ParameterValue=${value} "
+        parametersString += "ParameterKey=${key},ParameterValue='${value}' "
     }
     def capabilitiesString = ""
     capabilities.each { c ->
@@ -228,7 +228,7 @@ boolean cloudFormationStackExist(String stackName){
 def cloudFormationCreateOrUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[]){
     def parametersString = ""
     parameters.each{ key, value ->
-        parametersString += "ParameterKey=${key},ParameterValue=${value} "
+        parametersString += "ParameterKey=${key},ParameterValue='${value}' "
     }
     def capabilitiesString = ""
     capabilities.each { c ->

@@ -107,7 +107,7 @@ def logsGetOrCreateLogGroup(String logGroupName){
  *                              "param2"     : "some-value",
  *                            ]
  * @param capabilities - list of capabilities: CAPABILITY_IAM, CAPABILITY_NAMED_IAM, CAPABILITY_AUTO_EXPAND
- * @returns stackId - as String
+ * @returns if create stackId as String, in update returns the command status code
  */
 def cloudFormationCreateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[]){
     def parametersString = ""
@@ -122,6 +122,23 @@ def cloudFormationCreateStack(String stackName, String templateFile, java.util.M
     def responseObject = executeShToObject(command)
 
     return responseObject.StackId
+}
+
+/**
+ * Executes AWS CloudFormation package command
+ * More details: https://docs.aws.amazon.com/cli/latest/reference/cloudformation/package.html
+ *
+ * @param s3Bucket - The name of the S3 bucket where this command uploads the artifacts that are referenced in your template
+ * @param s3Prefix - A prefix name that the command adds to the artifacts' name when it uploads them to the S3 bucket. The prefix name is a path name (folder name) for the S3 bucket.
+ * @param templateFile - The path where your AWS CloudFormation template is located.
+ * @param outputTemplateFile - The path to the file where the command writes the output AWS CloudFormation template.
+ *
+ * @returns command status code
+ */
+def cloudFormationPackage(String s3Bucket, String s3Prefix, String templateFile, String outputTemplateFile ){
+    def command = "aws cloudformation package --s3-bucket ${s3Bucket} --s3-prefix ${s3Prefix} --template-file ${templateFile} --output-template-file ${outputTemplateFile.trim()}"
+    def status = sh(command: command, returnStatus:true)
+    return status
 }
 
 /**

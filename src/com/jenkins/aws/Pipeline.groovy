@@ -137,7 +137,7 @@ def cloudFormationCreateStack(String stackName, String templateFile, java.util.M
  */
 def cloudFormationPackage(String s3Bucket, String s3Prefix, String templateFile, String outputTemplateFile ){
     def command = "aws cloudformation package --s3-bucket ${s3Bucket} --s3-prefix ${s3Prefix} --template-file ${templateFile} --output-template-file ${outputTemplateFile.trim()}"
-    def status = sh(command: command, returnStatus:true)
+    def status = sh(script: command, returnStatus:true)
     return status
 }
 

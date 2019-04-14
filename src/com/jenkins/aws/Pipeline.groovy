@@ -230,6 +230,34 @@ boolean cloudFormationStackExist(String stackName){
 }
 
 /**
+ * Checks an AWS CloudFormation delete stack
+ * @param stackName
+ *
+ * @returns true on success
+ */
+boolean cloudFormationeDeleteStack(String stackName){
+    def command = "aws cloudformation delete-stack --stack-name ${stackName}"
+    def status = sh(script: command, returnStatus:true)
+    println("cloudformation delete-stack status code is: ${status}")
+
+    return status
+}
+
+/**
+ * Executes AWS CloudFormation wait stack-delete-complete
+ * @param stackName
+ *
+ * @returns cli command status code
+ */
+def cloudFormationWaitStackDeleteComplete(String stackName){
+    def waitCommand = "aws cloudformation wait sstack-delete-complete --stack-name ${stackName}"
+    def status = sh(waitCommand)
+    println("cloudformation wait stack-delete-complete status code is: ${status}")
+
+    return status
+}
+
+/**
  * Executes AWS CloudFormation create or update stack command
  * @param stackName
  * @param templateFile - path to a CloudFormation template .yaml or .json file
@@ -258,4 +286,22 @@ def cloudFormationCreateOrUpdateStack(String stackName, String templateFile, jav
     }
     return  cloudFormationCreateStack(stackName, templateFile, parameters, capabilities)
 
+}
+
+/**
+ * Executes AWS ECR delete repository command
+ * @param repositoryName - The name of the repository to delete.
+ * @param force - If a repository contains images, forces the deletion.
+ *
+ * @returns cli command status code, 0 on success otherwise 255
+ */
+def ecrDeleteRepository(String repositoryName, Boolean force){
+    String command = "aws ecr delete-repository --repository-name ${repositoryName}"
+    if (force){
+        command += " --force"
+    }
+    def status = sh(script: command, returnStatus:true)
+    println("ECR delete repository status code is: ${status}")
+
+    return status
 }

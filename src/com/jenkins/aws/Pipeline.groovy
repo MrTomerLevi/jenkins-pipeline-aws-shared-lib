@@ -244,6 +244,24 @@ boolean cloudFormationeDeleteStack(String stackName){
 }
 
 /**
+ * Executes AWS CloudFormation list stacks
+ * see https://docs.aws.amazon.com/cli/latest/reference/cloudformation/list-stacks.html
+ *
+ * @param stackStatusFilter Stack status to use as a filter.
+ *        Specify one or more stack status codes to list only stacks with the specified status codes.
+ *        For a complete list of stack status codes, see the StackStatus parameter of the Stack data type.
+ *
+ * @returns A list of StackSummary structures containing information about the specified stacks.
+ */
+boolean cloudFormationeListStacks(String stackStatusFilter=null){
+    def command = "aws cloudformation list-stacks"
+    if (stackStatusFilter != null){
+        command += " --stack-status-filter ${stackStatusFilter}"
+    }
+    return executeShToObject(command)
+}
+
+/**
  * Executes AWS CloudFormation wait stack-delete-complete
  * @param stackName
  *

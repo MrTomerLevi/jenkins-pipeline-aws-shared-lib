@@ -250,7 +250,7 @@ boolean cloudFormationeDeleteStack(String stackName){
  * @returns cli command status code
  */
 def cloudFormationWaitStackDeleteComplete(String stackName){
-    def waitCommand = "aws cloudformation wait sstack-delete-complete --stack-name ${stackName}"
+    def waitCommand = "aws cloudformation wait stack-delete-complete --stack-name ${stackName}"
     def status = sh(waitCommand)
     println("cloudformation wait stack-delete-complete status code is: ${status}")
 

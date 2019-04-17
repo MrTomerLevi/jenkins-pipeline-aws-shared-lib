@@ -253,7 +253,7 @@ boolean cloudFormationeDeleteStack(String stackName){
  *
  * @returns A list of StackSummary structures containing information about the specified stacks.
  */
-boolean cloudFormationeListStacks(String stackStatusFilter=null){
+boolean cloudFormationeListStacks(String stackStatusFilter = null){
     def command = "aws cloudformation list-stacks"
     if (stackStatusFilter != null){
         command += " --stack-status-filter ${stackStatusFilter}"
@@ -288,7 +288,7 @@ def cloudFormationWaitStackDeleteComplete(String stackName){
  *
  * @returns cli command status code
  */
-def cloudFormationCreateOrUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[]){
+def cloudFormationCreateOrUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities = []){
     def parametersString = ""
     parameters.each{ key, value ->
         parametersString += "ParameterKey=${key},ParameterValue='${value}' "
@@ -322,4 +322,51 @@ def ecrDeleteRepository(String repositoryName, Boolean force){
     println("ECR delete repository status code is: ${status}")
 
     return status
+}
+
+/**
+ * Executes AWS SSM put parameter command
+ * see: https://docs.aws.amazon.com/systems-manager/latest/userguide/param-create-cli.html
+ *
+ * @param name - parameter_name
+ * @param value - The parameter value that you want to add to the system.
+ * @param type - String or StringList
+ * @param description - Information about the parameter that you want to add to the system. Optional but recommended.
+ *
+ * @returns cli command status code, 0 on success otherwise 255
+ *
+ * Example:
+ * ssmPutParameter("/IAD/ERP/Oracle/addUsers", "Milana,Mariana,Mark,Miguel","StringList")
+ */
+def ssmPutParameter(String name, String value, String type, String description = '', boolean overwrite = false){
+    String command = "aws ssm put-parameter --name ${name} --value ${value} --type ${type} --description ${description} --overwrite ${overwrite}"
+    def status = sh(script: command, returnStatus:true)
+    println("SSM put parameter status code is: ${status}")
+
+    return status
+}
+
+/**
+ * Executes AWS SSM get parameter command
+ * see: https://docs.aws.amazon.com/cli/latest/reference/ssm/get-parameter.html
+ *
+ * @param name - The name of the parameter you want to query.
+ * @returns cli command status code, 0 on success otherwise 255
+ *
+ * Example:
+ * ssmGetParameter("/IAD/ERP/Oracle/sunshine")
+ *
+ * output:
+ *   {
+ *       "Name": "/IAD/ERP/Oracle/addUsers",
+ *       "Type": "String",
+ *       "Value": "Good day sunshine",
+ *       "Version": 1,
+ *       "LastModifiedDate": 1530018761.888,
+ *       "ARN": "arn:aws:ssm:us-east-1:123456789012:parameter/helloWorld"
+ *   }
+ */
+def ssmGetParameter(String name){
+    String command = "aws ssm get-parameter --name ${name}"
+    return executeShToObject(command)['Parameter']
 }

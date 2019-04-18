@@ -332,6 +332,7 @@ def ecrDeleteRepository(String repositoryName, Boolean force){
  * @param value - The parameter value that you want to add to the system.
  * @param type - String or StringList
  * @param description - Information about the parameter that you want to add to the system. Optional but recommended.
+ * @param overwrite -
  *
  * @returns cli command status code, 0 on success otherwise 255
  *
@@ -339,7 +340,10 @@ def ecrDeleteRepository(String repositoryName, Boolean force){
  * ssmPutParameter("/IAD/ERP/Oracle/addUsers", "Milana,Mariana,Mark,Miguel","StringList")
  */
 def ssmPutParameter(String name, String value, String type, String description = '', boolean overwrite = false){
-    String command = "aws ssm put-parameter --name ${name} --value ${value} --type ${type} --description ${description} --overwrite ${overwrite}"
+    String command = "aws ssm put-parameter --name ${name} --value ${value} --type ${type} --description ${description}"
+    if (overwrite){
+        command += " --overwrite"
+    }
     def status = sh(script: command, returnStatus:true)
     println("SSM put parameter status code is: ${status}")
 

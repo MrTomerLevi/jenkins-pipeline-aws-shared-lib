@@ -163,9 +163,10 @@ def cloudFormationDescribeStacks(String stackName){
  *                              "param2"     : "some-value",
  *                            ]
  *
+ * @param returnStatus Normally, a script which exits with a nonzero status code will cause the step to fail with an exception. If this option is checked, the return value of the step will instead be the status code. You may then compare it to zero, for example
  * @returns cli command status code
  */
-def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[]){
+def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[], boolean returnStatus=true){
     def parametersString = ""
     parameters.each{ key, value ->
         parametersString += "ParameterKey=${key},ParameterValue='${value}' "
@@ -175,10 +176,15 @@ def cloudFormationUpdateStack(String stackName, String templateFile, java.util.M
         capabilitiesString += "${c} "
     }
     def command = "aws cloudformation update-stack --stack-name ${stackName} --capabilities ${capabilitiesString.trim()} --template-body file://${templateFile} --parameters ${parametersString.trim()}"
-    def status = sh(script: command, returnStatus:true)
-    println("cloudformation update-stack status code is: ${status}")
+    def output = sh(script: command, returnStatus:returnStatus)
 
-    return status
+    if (returnStatus){
+        println("cloudformation update-stack status code is: ${output}")
+    }else{
+        println("cloudformation update-stack output is: ${output}")
+    }
+
+    return output
 }
 
 /**

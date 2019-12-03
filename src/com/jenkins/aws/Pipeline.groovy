@@ -163,10 +163,11 @@ def cloudFormationDescribeStacks(String stackName){
  *                              "param2"     : "some-value",
  *                            ]
  *
- * @param returnStatus Normally, a script which exits with a nonzero status code will cause the step to fail with an exception. If this option is checked, the return value of the step will instead be the status code. You may then compare it to zero, for example
+ * @param returnStatus Normally, a script which exits with a nonzero status code will cause the step to fail with an exception.
+ *         If this option is checked, the return value of the step will instead be the status code. You may then compare it to zero, for example
  * @returns cli command status code
  */
-def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[], boolean returnStatus=true){
+def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[], boolean returnStatus = true){
     def parametersString = ""
     parameters.each{ key, value ->
         parametersString += "ParameterKey=${key},ParameterValue='${value}' "
@@ -292,9 +293,11 @@ def cloudFormationWaitStackDeleteComplete(String stackName){
  *                              "param2"     : "some-value",
  *                            ]
  *
+ * @param returnStatus Normally, a script which exits with a nonzero status code will cause the step to fail with an exception.
+ *          If this option is checked, the return value of the step will instead be the status code. You may then compare it to zero, for example
  * @returns cli command status code
  */
-def cloudFormationCreateOrUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities = []){
+def cloudFormationCreateOrUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities = [], boolean returnStatus = true){
     def parametersString = ""
     parameters.each{ key, value ->
         parametersString += "ParameterKey=${key},ParameterValue='${value}' "
@@ -306,7 +309,7 @@ def cloudFormationCreateOrUpdateStack(String stackName, String templateFile, jav
 
     if (cloudFormationStackExist(stackName)){
         println("cloudformation stack ${stackName} exist, executing update-stack command")
-        return cloudFormationUpdateStack(stackName, templateFile, parameters, capabilities)
+        return cloudFormationUpdateStack(stackName, templateFile, parameters, capabilities, returnStatus)
     }
     return  cloudFormationCreateStack(stackName, templateFile, parameters, capabilities)
 

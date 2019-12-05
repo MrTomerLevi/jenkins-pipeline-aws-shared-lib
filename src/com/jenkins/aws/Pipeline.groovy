@@ -27,7 +27,7 @@ def runShCommand(String script){
  *Assumes the command returns Json as output.
  */
 def executeShToObject(String command){
-    def (status, output) = runShCommand(script: command)
+    def (status, output) = runShCommand(command)
 
     if (status != 0){
         throw new Exception(output)
@@ -202,7 +202,7 @@ def cloudFormationUpdateStack(String stackName, String templateFile, java.util.M
         capabilitiesString += "${c} "
     }
     def command = "aws cloudformation update-stack --stack-name ${stackName} --capabilities ${capabilitiesString.trim()} --template-body file://${templateFile} --parameters ${parametersString.trim()}"
-    def (status, output) = runShCommand(script: command)
+    def (status, output) = runShCommand(command)
 
     println("cloudformation update-stack status code is: ${status}")
     println("cloudformation update-stack output is: ${output}")

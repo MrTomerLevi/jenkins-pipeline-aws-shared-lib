@@ -1,6 +1,27 @@
 package com.aws
 import groovy.json.JsonSlurper
 
+
+/**
+ * Runs an sh command and returns both the status and output as a tuple.
+ * Example:
+ * (status, output) = runShCommand('ls -ltr')
+ * @param script - the script to execute
+ * @return a tuple of (status, output)
+ */
+def runShCommand(String script){
+
+    Random rand = new Random()
+    def random_num = rand.nextInt(100000)
+
+    def file_name = "script_output_$random_num.txt"
+    def status = sh(returnStatus: true, script: "$script > $file_name")
+    def output = readFile(file_name).trim()
+    sh "rm $file_name"
+
+    return [status, output]
+}
+
 /**
  Executes the given command and parse the output into an object.
  *Assumes the command returns Json as output.
@@ -192,25 +213,7 @@ def cloudFormationUpdateStack(String stackName, String templateFile, java.util.M
     return status
 }
 
-/**
- * Runs an sh command and returns both the status and output as a tuple.
- * Example:
- * (status, output) = runShCommand('ls -ltr')
- * @param script - the script to execute
- * @return a tuple of (status, output)
- */
-def runShCommand(String script){
 
-    Random rand = new Random()
-    def random_num = rand.nextInt(100000)
-
-    def file_name = "script_output_$random_num.txt"
-    def status = sh(returnStatus: true, script: "$script > $file_name")
-    def output = readFile(file_name).trim()
-    sh "rm $file_name"
-
-    return [status, output]
-}
 
 /**
  * Executes AWS CloudFormation wait stack-create-completed

@@ -15,7 +15,7 @@ def runShCommand(String script){
     def random_num = rand.nextInt(100000)
 
     def file_name = "script_output_${random_num}.txt"
-    def status = sh(returnStatus: true, script: "$script > $file_name")
+    def status = sh(returnStatus: true, script: "$script &> $file_name")
     def output = readFile(file_name).trim()
     sh "rm $file_name"
 

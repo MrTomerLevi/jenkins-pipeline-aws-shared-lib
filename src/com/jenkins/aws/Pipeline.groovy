@@ -1,14 +1,41 @@
 package com.aws
 import groovy.json.JsonSlurper
 
+
 /**
- Executes the given command and parse the output into object.
+ * Runs an sh command and returns both the status and output as a tuple.
+ * Example:
+ * (status, output) = runShCommand('ls -ltr')
+ * @param script - the script to execute
+ * @return a tuple of (status, output)
+ */
+def runShCommand(String script){
+
+    Random rand = new Random()
+    def random_num = rand.nextInt(100000)
+
+    def file_name = "script_output_${random_num}.txt"
+    def status = sh(returnStatus: true, script: "$script &> $file_name")
+    def output = readFile(file_name).trim()
+    sh "[ -e $file_name ] && rm $file_name"
+
+    return [status, output]
+}
+
+/**
+ Executes the given command and parse the output into an object.
  *Assumes the command returns Json as output.
  */
 def executeShToObject(String command){
-    def output = sh(script: command, returnStdout:true).trim()
-    def jsonSlurper = new JsonSlurper()
-    return jsonSlurper.parseText(output)
+    def (status, output) = runShCommand(command)
+
+    if (status != 0){
+        throw new Exception(output)
+    }else {
+        def jsonSlurper = new JsonSlurper()
+        return jsonSlurper.parseText(output)
+    }
+
 }
 
 /**
@@ -107,7 +134,7 @@ def logsGetOrCreateLogGroup(String logGroupName){
  *                              "param2"     : "some-value",
  *                            ]
  * @param capabilities - list of capabilities: CAPABILITY_IAM, CAPABILITY_NAMED_IAM, CAPABILITY_AUTO_EXPAND
- * @returns if create stackId as String, in update returns the command status code
+ * @returns stack id as a String
  */
 def cloudFormationCreateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[]){
     def parametersString = ""
@@ -163,11 +190,9 @@ def cloudFormationDescribeStacks(String stackName){
  *                              "param2"     : "some-value",
  *                            ]
  *
- * @param returnStatus Normally, a script which exits with a nonzero status code will cause the step to fail with an exception.
- *         If this option is checked, the return value of the step will instead be the status code. You may then compare it to zero, for example
- * @returns cli command status code
+ * @returns cli command status code if return status is 0, otherwise throws Exception with command output as body
  */
-def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[], boolean returnStatus = true){
+def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[], boolean returnStatus = false){
     def parametersString = ""
     parameters.each{ key, value ->
         parametersString += "ParameterKey=${key},ParameterValue='${value}' "
@@ -177,16 +202,18 @@ def cloudFormationUpdateStack(String stackName, String templateFile, java.util.M
         capabilitiesString += "${c} "
     }
     def command = "aws cloudformation update-stack --stack-name ${stackName} --capabilities ${capabilitiesString.trim()} --template-body file://${templateFile} --parameters ${parametersString.trim()}"
-    def output = sh(script: command, returnStatus:returnStatus)
+    def (status, output) = runShCommand(command)
 
-    if (returnStatus){
-        println("cloudformation update-stack status code is: ${output}")
-    }else{
-        println("cloudformation update-stack output is: ${output}")
+    println("cloudformation update-stack status code is: ${status}")
+    println("cloudformation update-stack output is: ${output}")
+
+    if(status != 0 && !returnStatus){
+        throw new Exception(output)
     }
-
-    return output
+    return status
 }
+
+
 
 /**
  * Executes AWS CloudFormation wait stack-create-completed
@@ -293,11 +320,9 @@ def cloudFormationWaitStackDeleteComplete(String stackName){
  *                              "param2"     : "some-value",
  *                            ]
  *
- * @param returnStatus Normally, a script which exits with a nonzero status code will cause the step to fail with an exception.
- *          If this option is checked, the return value of the step will instead be the status code. You may then compare it to zero, for example
  * @returns cli command status code
  */
-def cloudFormationCreateOrUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities = [], boolean returnStatus = true){
+def cloudFormationCreateOrUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities = []){
     def parametersString = ""
     parameters.each{ key, value ->
         parametersString += "ParameterKey=${key},ParameterValue='${value}' "
@@ -309,9 +334,9 @@ def cloudFormationCreateOrUpdateStack(String stackName, String templateFile, jav
 
     if (cloudFormationStackExist(stackName)){
         println("cloudformation stack ${stackName} exist, executing update-stack command")
-        return cloudFormationUpdateStack(stackName, templateFile, parameters, capabilities, returnStatus)
+        return cloudFormationUpdateStack(stackName, templateFile, parameters, capabilities)
     }
-    return  cloudFormationCreateStack(stackName, templateFile, parameters, capabilities)
+    return cloudFormationCreateStack(stackName, templateFile, parameters, capabilities)
 
 }
 

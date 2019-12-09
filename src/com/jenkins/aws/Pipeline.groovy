@@ -192,7 +192,7 @@ def cloudFormationDescribeStacks(String stackName){
  *
  * @returns cli command status code if return status is 0, otherwise throws Exception with command output as body
  */
-def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[], boolean returnStatus = true){
+def cloudFormationUpdateStack(String stackName, String templateFile, java.util.Map parameters, java.util.List<String> capabilities=[], boolean returnStatus = false){
     def parametersString = ""
     parameters.each{ key, value ->
         parametersString += "ParameterKey=${key},ParameterValue='${value}' "

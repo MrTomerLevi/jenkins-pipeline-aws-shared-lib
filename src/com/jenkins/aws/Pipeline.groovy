@@ -17,7 +17,7 @@ def runShCommand(String script){
     def file_name = "script_output_${random_num}.txt"
     def status = sh(returnStatus: true, script: "$script &> $file_name")
     def output = readFile(file_name).trim()
-    sh "rm $file_name"
+    sh "[ -e $file_name ] && rm $file_name"
 
     return [status, output]
 }

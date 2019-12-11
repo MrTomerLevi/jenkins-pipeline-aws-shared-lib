@@ -12,7 +12,7 @@ In Jenkins, go to Manage Jenkins → Configure System. Under Global Pipeline Lib
 * Default version: Specify a Git reference (branch or commit SHA), e.g. master
 * Retrieval method: Modern SCM
 * Select the Git type
-* Project repository: https://github.com/AndreyVMarkelov/jenkins-pipeline-shared-lib-sample.git
+* Project repository: https://github.com/MrTomerLevi/jenkins-pipeline-aws-shared-lib.git
 * Credentials: (leave blank)
 
 Then create a Jenkins job with the following pipeline (note that the underscore _ is not a typo):

@@ -24,6 +24,56 @@ def aws = new com.jenkins.aws.Pipeline()
 docker.image('garland/aws-cli-docker').inside {
     withAWS(credentials: 'aws-credentials',region: 'us-east-1'){
                     
+        stage('Create CloudFormation Stack'){
+             def cfTemplate = "./cloudformation.yaml"
+            java.util.List<String> capabilities = ["CAPABILITY_IAM", "CAPABILITY_NAMED_IAM" ,"CAPABILITY_AUTO_EXPAND"]
+            def s3Bucket = "my-s3-bucket-name"
+            
+            def stackId = aws.cloudFormationCreateOrUpdateStack("myStackName", cfPackedTemplate, bijoInfraCfParams, capabilities)
+             println("Stack id: ${stackId}")
+             assert packingStatus != 2  : "CloudFormation update failed"
+        }
+    }
+}
+```
+
+```groovy
+@Library('jenkins-pipeline-aws-shared-lib')_
+
+def aws = new com.jenkins.aws.Pipeline()
+
+docker.image('garland/aws-cli-docker').inside {
+    withAWS(credentials: 'aws-credentials',region: 'us-east-1'){
+                    
+        stage('Package and Create CloudFormation Stack'){
+              def cfTemplate = "./cloudformation.yaml"
+              def cfPackedTemplate = "./cloudformation-packed.yaml"
+              java.util.List<String> capabilities = ["CAPABILITY_IAM", "CAPABILITY_NAMED_IAM" ,"CAPABILITY_AUTO_EXPAND"]
+
+              stackExist = aws.cloudFormationStackExist("myStackName")
+              println("CloudFormation Stack already exist: ${stackExist}")
+
+              def s3Bucket = "my-s3-bucket-name"
+              def packingStatus = aws.cloudFormationPackage(s3Bucket, "ready-templates-folder", cfPackedTemplate, cfPackedTemplate)
+              println("CloudFormation Stack packing status code is: ${packingStatus}")
+              assert packingStatus != 255  : "CloudFormation packing failed"
+
+              def stackId = aws.cloudFormationCreateOrUpdateStack("myStackName", cfPackedTemplate, bijoInfraCfParams, capabilities)
+             println("Stack id: ${stackId}")
+             assert packingStatus != 2  : "CloudFormation update failed"
+        }
+    }
+}
+```
+
+```groovy
+@Library('jenkins-pipeline-aws-shared-lib')_
+
+def aws = new com.jenkins.aws.Pipeline()
+
+docker.image('garland/aws-cli-docker').inside {
+    withAWS(credentials: 'aws-credentials',region: 'us-east-1'){
+                    
         stage('Get or create ECS cluster'){
             ecrLogin = aws.awsECRGetLogin()
             println ecrLogin

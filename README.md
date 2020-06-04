@@ -25,13 +25,13 @@ docker.image('garland/aws-cli-docker').inside {
     withAWS(credentials: 'aws-credentials',region: 'us-east-1'){
                     
         stage('Create CloudFormation Stack'){
-             def cfTemplate = "./cloudformation.yaml"
-            java.util.List<String> capabilities = ["CAPABILITY_IAM", "CAPABILITY_NAMED_IAM" ,"CAPABILITY_AUTO_EXPAND"]
+            def cfTemplate = "./cloudformation.yaml"
+            java.util.List<String> capabilities = ["CAPABILITY_IAM"]
             def s3Bucket = "my-s3-bucket-name"
             
             def stackId = aws.cloudFormationCreateOrUpdateStack("myStackName", cfPackedTemplate, bijoInfraCfParams, capabilities)
-             println("Stack id: ${stackId}")
-             assert packingStatus != 2  : "CloudFormation update failed"
+            println("Stack id: ${stackId}")
+            assert packingStatus != 2  : "CloudFormation update failed"
         }
     }
 }

@@ -161,7 +161,7 @@ def cloudFormationCreateStack(String stackName, String templateFile, java.util.M
  * @returns status per user map as returned by aws-cli cognito-idp admin-set-user-password command
  */
 def cognitoAdminSetUserPassword(String userPoolId, java.util.Map userNameToPassword){
-    def statusPerUserMap = [:]
+    java.util.Map statusPerUserMap = [:]
     userNameToPassword.each{ userName, password ->
         def status = sh(script:"aws cognito-idp admin-set-user-password --user-pool-id ${userPoolId} -username ${userName} --password ${password} --permanent", returnStatus:true)
         println("cognito-idp admin-set-user-password status code for username: ${userName} is: ${status}")

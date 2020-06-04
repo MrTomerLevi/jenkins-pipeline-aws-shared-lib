@@ -1,12 +1,12 @@
-# jenkins-pipeline-aws-shared-lib
+# Jenkins Pipeline AWS Shared Library
 
-This project provides easy AWS  shared library which can be used into Jenkins pipeline.
+This project provides easy AWS shared library which can be used in Jenkins pipeline code.
 References:
 * https://jenkins.io/doc/book/pipeline/shared-libraries/#using-libraries
 * https://github.com/Diabol/jenkins-pipeline-shared-library-template
 * https://github.com/AndreyVMarkelov/jenkins-pipeline-shared-lib-sample
 
-Setup instructions
+## Setup instructions
 
 In Jenkins, go to Manage Jenkins → Configure System. Under Global Pipeline Libraries, add a library with the following settings:
 * Default version: Specify a Git reference (branch or commit SHA), e.g. master

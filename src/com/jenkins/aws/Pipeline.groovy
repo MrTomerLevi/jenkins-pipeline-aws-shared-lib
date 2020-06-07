@@ -154,17 +154,17 @@ def cloudFormationCreateStack(String stackName, String templateFile, java.util.M
 
 /**
  * Executes AWS Cognito admin-set-user-password - which sets a permanent password for user.
- * This method will execute a seprate aws-cli command for each user
  *
  * @param userPoolId - Cognito user pool Id that contains the given users in userNameToPassword
- * @param userNameToPassword - a map of username -> password to set
- * @returns
+ * @param userName - user name of an existing Cognito user which is in Account Status of 'FORCE_CHANGE_PASSWORD'
+ * @param password - a permanent password to set
+ *
+ * @returns status as returned by aws-cli cognito-idp admin-set-user-password command
  */
-def cognitoAdminSetUserPassword(String userPoolId, java.util.Map userNameToPassword){
-    userNameToPassword.each { userName, password ->
-        def status = sh(script: "aws cognito-idp admin-set-user-password --user-pool-id ${userPoolId} -username ${userName} --password ${password} --permanent", returnStatus: true)
-        println("cognito-idp admin-set-user-password status code for username: ${userName} is: ${status}")
-    }
+def cognitoAdminSetUserPassword(String userPoolId, String userName, String password){
+    def status = sh(script: "aws cognito-idp admin-set-user-password --user-pool-id ${userPoolId} -username ${userName} --password ${password} --permanent", returnStatus: true)
+    println("cognito-idp admin-set-user-password status code for username: ${userName} is: ${status}")
+    return status
 }
 
 

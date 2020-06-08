@@ -159,12 +159,10 @@ def cloudFormationCreateStack(String stackName, String templateFile, java.util.M
  * @param userName - user name of an existing Cognito user which is in Account Status of 'FORCE_CHANGE_PASSWORD'
  * @param password - a permanent password to set
  *
- * @returns status as returned by aws-cli cognito-idp admin-set-user-password command
+ * @returns nothing
  */
 def cognitoAdminSetUserPassword(String userPoolId, String userName, String password){
-    def status = sh(script: "aws cognito-idp admin-set-user-password --user-pool-id ${userPoolId} --username ${userName} --password ${password} --permanent", returnStatus: true)
-    println("cognito-idp admin-set-user-password status code for username: ${userName} is: ${status}")
-    return status
+    sh(script: "aws cognito-idp admin-set-user-password --user-pool-id ${userPoolId} --username ${userName} --password ${password} --permanent", returnStdout: true).trim()
 }
 
 
@@ -262,7 +260,7 @@ def cloudFormationWaitStackUpdateComplete(String stackName){
 }
 
 /**
- * Checks an AWS CloudFormation stack exists
+ * Checks if an AWS CloudFormation stack exists
  * @param stackName
  *
  * @returns true if the given stack exist regardless of its state

@@ -167,6 +167,24 @@ def cognitoAdminSetUserPassword(String userPoolId, String userName, String passw
 
 
 /**
+ * Executes AWS Cognito admin-initiate-auth - which initiates the authentication flow
+ *
+ * @param userPoolId - Cognito user pool Id that contains the given users in userNameToPassword
+ * @param clientId - The app client id
+ * @param userName - user name of an existing Cognito user
+ * @param password - password
+ *
+ * @returns and object containing Cognito response
+ */
+def cognitoAdminSetUserPassword(String userPoolId, String clientId, String userName, String password){
+    def command =  "aws cognito-idp admin-initiate-auth --user-pool-id '${userPoolId}' --client-id '${clientId}' --auth-flow ADMIN_NO_SRP_AUTH --auth-parameters USERNAME=${userName},PASSWORD='${password}'"
+    def responseObject = executeShToObject(command)
+    return responseObject
+}
+
+
+
+/**
  * Executes AWS CloudFormation package command
  * More details: https://docs.aws.amazon.com/cli/latest/reference/cloudformation/package.html
  *

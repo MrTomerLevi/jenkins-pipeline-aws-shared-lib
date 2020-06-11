@@ -33,7 +33,7 @@ def executeShToObject(String command){
         throw new Exception(output)
     }else {
         def jsonSlurper = new JsonSlurper()
-        return jsonSlurper.parseText(output)
+        return new HashMap<>(jsonSlurper.parseText(output))
     }
 
 }

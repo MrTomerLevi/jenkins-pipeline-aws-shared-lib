@@ -176,7 +176,7 @@ def cognitoAdminSetUserPassword(String userPoolId, String userName, String passw
  *
  * @returns and object containing Cognito response
  */
-def cognitoAdminSetUserPassword(String userPoolId, String clientId, String userName, String password){
+def cognitoAdminInitiateAuth(String userPoolId, String clientId, String userName, String password){
     def command =  "aws cognito-idp admin-initiate-auth --user-pool-id '${userPoolId}' --client-id '${clientId}' --auth-flow ADMIN_NO_SRP_AUTH --auth-parameters USERNAME=${userName},PASSWORD='${password}'"
     def responseObject = executeShToObject(command)
     return responseObject

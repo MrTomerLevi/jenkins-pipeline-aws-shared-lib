@@ -1,5 +1,13 @@
 package com.aws
-import groovy.json.JsonSlurper
+
+import com.cloudbees.groovy.cps.NonCPS
+import groovy.json.JsonSlurperClassic
+
+
+@NonCPS
+def jsonParse(def json) {
+    new JsonSlurperClassic().parseText(json)
+}
 
 
 /**
@@ -22,6 +30,8 @@ def runShCommand(String script){
     return [status, output]
 }
 
+
+
 /**
  Executes the given command and parse the output into an object.
  *Assumes the command returns a Json as output.
@@ -32,8 +42,7 @@ def executeShToObject(String command){
     if (status != 0){
         throw new Exception(output)
     }else {
-        def jsonSlurper = new JsonSlurper()
-        return new HashMap<>(jsonSlurper.parseText(output))
+        return new HashMap<>(jsonParse(output))
     }
 
 }
